@@ -1,0 +1,12 @@
+├── /Users/tomatoboy/Develop/Github/NodeJs/decomment
+  ├── bin
+    ├── decomment.mjs
+  ├── src
+    ├── config.mjs
+    ├── index.mjs
+    ├── transform.mjs
+  ├── test
+    ├── test.jsx
+    ├── test.mjs
+  ├── decomment.config.js
+  ├── README.md
