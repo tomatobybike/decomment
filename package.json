@@ -1,6 +1,6 @@
 {
   "name": "decomment",
-  "version": "0.2.0",
+  "version": "0.1.0",
   "description": "Safely remove comments from JavaScript / JSX using AST",
   "type": "module",
   "bin": {
