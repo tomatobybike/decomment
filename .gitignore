@@ -36,6 +36,7 @@ build/
 backup
 logs
 test
+STRUCTURE.md
 
 .history
 
