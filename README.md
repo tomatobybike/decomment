@@ -28,20 +28,19 @@ The tool is designed for production codebases, CI pipelines, and teams that care
 ### Global (recommended)
 
 ```bash
-npm install -g decomment
+npm install -g @king-monkey/decomment
 ```
+
 or
 
 ```bash
-yarn global add decomment
+yarn global add @king-monkey/decomment
 ```
 
 ### Local development
 
 ```bash
-git clone <repo>
-cd decomment
-npm install
+yarn add @king-monkey/decomment
 ```
 
 ---
@@ -223,6 +222,72 @@ If you care about safety, reviewability, and deterministic output, this tool is 
 - You do not care about accidental removals
 
 ---
+
+## npm Scripts Integration (Recommended)
+
+decomment is designed to work naturally with npm scripts for safe and repeatable workflows.
+
+```json
+{
+  "scripts": {
+    "decomment": "decomment",
+    "decomment:check": "decomment --dry-run --stats",
+    "decomment:fix": "decomment --stats",
+    "decomment:restore": "decomment restore",
+    "decomment:clean": "decomment clean"
+  }
+}
+```
+
+---
+
+## Common workflows
+
+```bash
+# Preview comment removal (no file changes)
+npm run decomment:check
+
+# Remove comments and create backups
+npm run decomment:fix
+
+# Restore all files from backups
+npm run decomment:restore
+
+# Remove all .decomment.bak files
+npm run decomment:clean
+
+
+```
+
+### 🪝 Pre-commit Hook (Husky)（Optional / Advanced）
+
+## Pre-commit Hook (Husky) – Optional
+
+You can integrate **decomment** into a pre-commit workflow to automatically remove comments before each commit.
+
+> ⚠️ This is optional and recommended only for teams that already use Husky.
+
+### Setup
+
+```bash
+npm install -D husky
+npx husky install
+npx husky add .husky/pre-commit
+```
+
+## Example .husky/pre-commit
+
+```bash
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo "🧹 Running decomment..."
+
+npx decomment "src/**/*.{js,mjs,jsx,tsx,vue}" \
+  --keep eslint-,@license,@preserve \
+  --stats
+
+```
 
 ## License
 
