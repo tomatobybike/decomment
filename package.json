@@ -1,6 +1,6 @@
 {
   "name": "@tomatobybike/decomment",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "private": false,
   "description": "Safely remove comments from JavaScript, TypeScript, JSX, TSX, and Vue files using AST.",
   "keywords": [
