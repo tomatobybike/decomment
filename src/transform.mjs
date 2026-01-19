@@ -8,8 +8,10 @@ function filterComments(comments, keep, stats) {
     const text = comment.value.trim()
     if (keep.some(k => text.startsWith(k))) {
       kept.push(comment)
+      // eslint-disable-next-line no-param-reassign
       stats.kept++
     } else {
+      // eslint-disable-next-line no-param-reassign
       stats.removed++
     }
   }
@@ -24,7 +26,7 @@ export function transformCode(code, keep, stats = { removed: 0, kept: 0 }) {
 
   traverseFn(ast, {
     enter(path) {
-      const node = path.node
+      const {node} = path
       if (node.leadingComments) node.leadingComments = filterComments(node.leadingComments, keep, stats)
       if (node.trailingComments) node.trailingComments = filterComments(node.trailingComments, keep, stats)
       if (node.innerComments) node.innerComments = filterComments(node.innerComments, keep, stats)

@@ -1,9 +1,11 @@
 import fs from 'fs'
-import path from 'path'
 import { globSync } from 'glob'
-import { transformCode } from './transform.mjs'
+import path from 'path'
+
 import { loadConfig } from './config.mjs'
-import { writeManifest, readManifest } from './manifest.mjs'
+
+import { readManifest, writeManifest } from './manifest.mjs'
+import { transformCode } from './transform.mjs'
 
 const defaultFileTypes = ['js', 'mjs', 'jsx', 'tsx', 'vue']
 const defaultGlob = `**/*.{${defaultFileTypes.join(',')}}`
@@ -53,8 +55,7 @@ function parseArgs(args) {
     else if (a === '-h' || a === '--help') {
       printHelp()
       process.exit(0)
-    }
-    else files.push(a)
+    } else files.push(a)
   }
 
   return { opts, files, command }
@@ -67,7 +68,7 @@ function resolvePatterns(files, config) {
 }
 
 function findTargets(patterns, cwd) {
-  return patterns.flatMap(p =>
+  return patterns.flatMap((p) =>
     globSync(p, {
       cwd,
       absolute: true,
@@ -131,10 +132,9 @@ export async function run(argv) {
 
   const patterns = resolvePatterns(files, config)
 
-  const keep =
-    opts.keep.length
-      ? opts.keep
-      : config?.keep ?? ['eslint-', '@license', '@preserve']
+  const keep = opts.keep.length
+    ? opts.keep
+    : (config?.keep ?? ['eslint-', '@license', '@preserve'])
 
   const targets = findTargets(patterns, cwd)
 
@@ -143,18 +143,21 @@ export async function run(argv) {
     return
   }
 
-  let totalStats = { removed: 0, kept: 0 }
+  const totalStats = { removed: 0, kept: 0 }
   const records = []
 
   for (const abs of targets) {
     const code = fs.readFileSync(abs, 'utf8')
-    const { code: next, stats } = transformCode(code, keep, { removed: 0, kept: 0 })
+    const { code: next, stats } = transformCode(code, keep, {
+      removed: 0,
+      kept: 0
+    })
 
     totalStats.removed += stats.removed
     totalStats.kept += stats.kept
 
     const rel = path.relative(cwd, abs)
-    const bak = abs + '.decomment.bak'
+    const bak = `${abs}.decomment.bak`
 
     if (opts.dryRun) {
       console.log(`🟡 [dry-run] ${rel}`)

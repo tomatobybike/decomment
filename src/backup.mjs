@@ -1,8 +1,17 @@
 import fs from 'fs'
 import path from 'path'
 
+function findBakFiles(dir = process.cwd(), result = []) {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name)
+    if (entry.isDirectory()) findBakFiles(full, result)
+    else if (entry.name.endsWith('.bak')) result.push(full)
+  }
+  return result
+}
+
 export function backupFile(file) {
-  const bak = file + '.bak'
+  const bak = `${file}.bak`
   fs.copyFileSync(file, bak)
 }
 
@@ -21,13 +30,4 @@ export function cleanBackups() {
     fs.unlinkSync(bak)
     console.log('[clean]', bak)
   }
-}
-
-function findBakFiles(dir = process.cwd(), result = []) {
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    const full = path.join(dir, entry.name)
-    if (entry.isDirectory()) findBakFiles(full, result)
-    else if (entry.name.endsWith('.bak')) result.push(full)
-  }
-  return result
 }

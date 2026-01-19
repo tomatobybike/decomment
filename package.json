@@ -2,22 +2,6 @@
   "name": "@king-monkey/decomment",
   "version": "0.1.0",
   "description": "Safely remove comments from JavaScript, TypeScript, JSX, TSX, and Vue files using AST.",
-  "type": "module",
-  "bin": {
-    "decomment": "./bin/decomment.mjs"
-  },
-  "exports": {
-    ".": "./src/index.mjs"
-  },
-  "files": [
-    "bin",
-    "src",
-    "README.md",
-    "LICENSE"
-  ],
-  "engines": {
-    "node": ">=18"
-  },
   "keywords": [
     "comment",
     "strip-comments",
@@ -34,24 +18,90 @@
     "eslint",
     "license"
   ],
-  "author": "King Monkey",
+  "scripts": {
+    "build": "node scripts/esbuild.config.mjs",
+    "check:npm:login": "node scripts/check-npm-login.mjs",
+    "format": "prettier --write \"src/**/*.{js,mjs}\"",
+    "lint": "eslint src --ext .js,.mjs src",
+    "lint:fix": "eslint src --ext .js,.mjs --fix",
+    "pack": "npm pack",
+    "prepare": "husky install",
+    "prepublishOnly": "yarn lint && yarn build",
+    "prettierall": "npx prettier --write 'src/**/*.{js,jsx}'",
+    "push:tags": "git push origin main --follow-tags",
+    "prerelease": "yarn lint",
+    "release": "yarn check:npm:login && yarn release:patch && npm publish && yarn push:tags",
+    "release:rollback": "git reset --hard HEAD~1 && git tag -d $(git tag --points-at HEAD~1)",
+    "release:major": "yarn lint && standard-version --release-as major",
+    "release:minor": "yarn lint && standard-version --release-as minor",
+    "release:patch": "yarn lint && standard-version --release-as patch",
+    "sort": "sort-package-json"
+  },
+  "homepage": "https://github.com/tomatobybike/decomment#readme",
+  "bugs": {
+    "url": "https://github.com/tomatobybike/decomment/issues"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tomatobybike/decomment.git"
   },
-  "bugs": {
-    "url": "https://github.com/tomatobybike/decomment/issues"
+  "license": "MIT",
+  "author": "Tom <tomatobybike@gmail.com>",
+  "type": "module",
+  "imports": {
+    "#src/*": "./src/*",
+    "#utils/*": "./src/utils/*"
   },
-  "homepage": "https://github.com/tomatobybike/decomment#readme",
-  "publishConfig": {
-    "access": "public"
+  "exports": {
+    ".": "./src/index.mjs"
+  },
+  "bin": {
+    "decomment": "./bin/decomment.mjs"
+  },
+  "files": [
+    "bin",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "package.json": [
+      "sort-package-json"
+    ],
+    "src/**/*.js": [
+      "prettier --write",
+      "eslint --fix"
+    ]
   },
   "dependencies": {
+    "@babel/generator": "^7.28.6",
     "@babel/parser": "^7.24.0",
     "@babel/traverse": "^7.24.0",
-    "@babel/generator": "^7.24.0",
     "glob": "^10.3.10"
   },
-  "license": "MIT",
-  "packageManager": "yarn@1.22.22"
+  "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "5.2.2",
+    "eslint": "8.57.1",
+    "eslint-config-airbnb-base": "15.0.0",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-import-resolver-alias": "1.1.2",
+    "eslint-plugin-import": "2.32.0",
+    "eslint-plugin-prettier": "5.5.4",
+    "eslint-plugin-simple-import-sort": "12.1.1",
+    "husky": "9.1.7",
+    "lint-staged": "16.2.7",
+    "prettier": "3.6.2",
+    "prettier-plugin-packagejson": "2.5.19",
+    "sort-package-json": "3.4.0",
+    "standard-version": "9.5.0"
+  },
+  "packageManager": "yarn@1.22.22",
+  "engines": {
+    "node": ">=18"
+  }
 }
