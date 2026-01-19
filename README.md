@@ -47,19 +47,20 @@ The tool is designed for production codebases, CI pipelines, and teams that care
 ### Global (recommended)
 
 ```bash
-npm install -g @king-monkey/decomment
+npm install -g @tomatobybike/decomment
 ```
 
 or
 
 ```bash
-yarn global add @king-monkey/decomment
+yarn global add @tomatobybike/decomment --ignore-engines
 ```
+Yarn v1 global install is not recommended due to legacy dependency constraints.
 
 ### Local development
 
 ```bash
-yarn add @king-monkey/decomment
+yarn add @tomatobybike/decomment
 ```
 
 ---
@@ -67,7 +68,14 @@ yarn add @king-monkey/decomment
 ## Usage
 
 ```bash
+# Remove comments
 decomment [options] [files/globs]
+
+# Restore files from backups
+decomment restore
+
+# Remove all backup files
+decomment clean
 ```
 
 If no files or globs are provided, **decomment scans the current directory by default**.
