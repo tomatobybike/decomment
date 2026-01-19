@@ -1,8 +1,27 @@
-# decomment
+# 📦 decomment
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/@tomatobybike/decomment">
+    <img src="https://img.shields.io/npm/v/%40tomatobybike%2Fdecomment.svg" alt="npm version">
+  </a>
+  <a href="https://www.npmjs.com/package/@tomatobybike/decomment">
+    <img src="https://img.shields.io/npm/dm/%40tomatobybike%2Fdecomment.svg" alt="downloads">
+  </a>
+  <a href="https://github.com/tomatobybike/decomment/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/tomatobybike/decomment.svg" alt="license">
+  </a>
+  <a href="https://github.com/tomatobybike/decomment">
+    <img src="https://img.shields.io/github/stars/tomatobybike/decomment.svg?style=social" alt="GitHub stars">
+  </a>
+  <a href="https://github.com/tomatobybike/decomment/issues">
+    <img src="https://img.shields.io/github/issues/tomatobybike/decomment.svg" alt="issues">
+  </a>
+</p>
+
 
 **decomment** is a CLI tool to safely remove comments from JavaScript, TypeScript, JSX, TSX, and Vue files.
 
-It performs **AST-based comment removal** to ensure code behavior is never changed.  
+It performs **AST-based comment removal** to ensure code behavior is never changed.
 The tool is designed for production codebases, CI pipelines, and teams that care about safety, auditability, and reversibility.
 
 > **Remove comments — and nothing else.**
