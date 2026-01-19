@@ -88,9 +88,9 @@ Optional configuration file to define default files and keep prefixes.
 
 ```js
 export default {
-  include: ['src/**/*.{js,mjs,jsx,tsx,vue}', 'test/**/*.{js,mjs,jsx,tsx,vue}'],
-  keep: ['eslint-', '@license', '@preserve']
-}
+  include: ["src/**/*.{js,mjs,jsx,tsx,vue}", "test/**/*.{js,mjs,jsx,tsx,vue}"],
+  keep: ["eslint-", "@license", "@preserve"],
+};
 ```
 
 - `include` → Array of glob patterns to process by default
@@ -114,7 +114,32 @@ If a `.bak` file already exists, a timestamp is added to avoid overwriting.
 
 ---
 
+---
+
+## 🏆 When to Choose decomment
+
+- You want **zero code behavior changes**
+- You need **auditable CI output**
+- You must **preserve ESLint / license comments**
+- You work with **modern JS frameworks**
+- You want a **safe, reversible operation**
+
+---
+
+## 🧪 When NOT to Use decomment
+
+- You just need quick text cleanup
+- You already minify your source code
+- You don't care about accidental removals
+
+---
+
+## 🔑 One-liner for npm Description
+
+> **AST-based comment removal for production codebases. Safe, configurable, auditable, and CI-ready.**
+
+---
+
 ## License
 
 MIT License
-
