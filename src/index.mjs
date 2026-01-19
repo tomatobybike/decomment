@@ -3,9 +3,9 @@ import path from 'path'
 import { globSync } from 'glob'
 import { transformCode } from './transform.mjs'
 import { loadConfig } from './config.mjs'
+import { writeManifest, readManifest } from './manifest.mjs'
 
 const defaultFileTypes = ['js', 'mjs', 'jsx', 'tsx', 'vue']
-
 const defaultGlob = `**/*.{${defaultFileTypes.join(',')}}`
 
 const ignoreDirs = [
@@ -81,47 +81,55 @@ export async function run(argv) {
   const { opts, files, command } = parseArgs(argv)
   const config = await loadConfig(cwd)
 
-  const patterns = resolvePatterns(files, config)
-
   // ===== RESTORE =====
   if (command === 'restore') {
-    const targets = findTargets(patterns, cwd)
+    const manifest = readManifest(cwd)
+    if (!manifest) {
+      console.warn('⚠️ No manifest found')
+      return
+    }
 
-    for (const abs of targets) {
-      const bak = abs + '.decomment.bak'
-      if (!fs.existsSync(bak)) continue
+    for (const { file, backup } of manifest.files) {
+      if (!fs.existsSync(backup)) continue
 
       if (opts.dryRun) {
-        console.log(`↩️ [dry-run] restore ${path.relative(cwd, abs)}`)
+        console.log(`↩️ [dry-run] restore ${file}`)
         continue
       }
 
-      fs.writeFileSync(abs, fs.readFileSync(bak, 'utf8'), 'utf8')
-      console.log(`↩️ restored ${path.relative(cwd, abs)}`)
+      fs.writeFileSync(file, fs.readFileSync(backup, 'utf8'), 'utf8')
+      console.log(`↩️ restored ${file}`)
     }
+
     return
   }
 
   // ===== CLEAN =====
   if (command === 'clean') {
-    const targets = findTargets(patterns, cwd)
+    const manifest = readManifest(cwd)
+    if (!manifest) {
+      console.warn('⚠️ No manifest found')
+      return
+    }
 
-    for (const abs of targets) {
-      const bak = abs + '.decomment.bak'
-      if (!fs.existsSync(bak)) continue
+    for (const { backup } of manifest.files) {
+      if (!fs.existsSync(backup)) continue
 
       if (opts.dryRun) {
-        console.log(`🧹 [dry-run] remove ${path.relative(cwd, bak)}`)
+        console.log(`🧹 [dry-run] remove ${backup}`)
         continue
       }
 
-      fs.unlinkSync(bak)
-      console.log(`🧹 removed ${path.relative(cwd, bak)}`)
+      fs.unlinkSync(backup)
+      console.log(`🧹 removed ${backup}`)
     }
+
     return
   }
 
   // ===== STRIP COMMENTS =====
+
+  const patterns = resolvePatterns(files, config)
 
   const keep =
     opts.keep.length
@@ -136,6 +144,7 @@ export async function run(argv) {
   }
 
   let totalStats = { removed: 0, kept: 0 }
+  const records = []
 
   for (const abs of targets) {
     const code = fs.readFileSync(abs, 'utf8')
@@ -144,16 +153,31 @@ export async function run(argv) {
     totalStats.removed += stats.removed
     totalStats.kept += stats.kept
 
+    const rel = path.relative(cwd, abs)
+    const bak = abs + '.decomment.bak'
+
     if (opts.dryRun) {
-      console.log(`🟡 [dry-run] ${path.relative(cwd, abs)}`)
+      console.log(`🟡 [dry-run] ${rel}`)
       continue
     }
 
-    const bak = abs + '.decomment.bak'
     fs.writeFileSync(bak, code, 'utf8')
     fs.writeFileSync(abs, next, 'utf8')
 
-    console.log(`✅ ${path.relative(cwd, abs)} (backup created)`)
+    records.push({
+      file: rel,
+      backup: bak
+    })
+
+    console.log(`✅ ${rel} (backup created)`)
+  }
+
+  if (!opts.dryRun && records.length) {
+    writeManifest({
+      cwd,
+      command: `decomment ${patterns.join(' ')}`,
+      records
+    })
   }
 
   if (opts.stats) {

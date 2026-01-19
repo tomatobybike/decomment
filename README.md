@@ -1,38 +1,47 @@
 # decomment
 
-**decomment** is a CLI tool to safely remove comments from JavaScript, TypeScript, JSX, TSX, and Vue files.  
-It supports AST-level comment removal, preserving specified comment prefixes, glob patterns, config files, dry-run mode, and statistics.
+**decomment** is a CLI tool to safely remove comments from JavaScript, TypeScript, JSX, TSX, and Vue files.
+
+It performs **AST-based comment removal** to ensure code behavior is never changed.  
+The tool is designed for production codebases, CI pipelines, and teams that care about safety, auditability, and reversibility.
+
+> **Remove comments — and nothing else.**
 
 ---
 
 ## Features
 
-- Remove single-line (`//`) and block (`/* */`) comments safely via AST
-- Preserve comments with specified prefixes (e.g., `eslint-`, `@license`)
-- Supports JS, MJS, JSX, TSX, and Vue files
-- Glob support for batch file processing
-- Configurable via `decomment.config.js`
-- Dry-run mode for previewing changes
-- Statistics mode to show removed/kept comments
-- Automatic `.bak` backup of original files
-- Cross-platform CLI (Windows / macOS / Linux)
+- AST-based removal of single-line (`//`) and block (`/* */`) comments
+- Preserves comments with specified prefixes (e.g. `eslint-`, `@license`)
+- Supports JavaScript, MJS, JSX, TSX, and Vue (script section)
+- Glob patterns for batch processing
+- Optional configuration via `decomment.config.js`
+- Dry-run mode to preview changes
+- Statistics output (removed / kept comments)
+- Automatic backup with full rollback support
+- Cross-platform (Windows / macOS / Linux)
 
 ---
 
 ## Installation
 
-### Locally
+### Global (recommended)
+
+```bash
+npm install -g decomment
+```
+or
+
+```bash
+yarn global add decomment
+```
+
+### Local development
 
 ```bash
 git clone <repo>
 cd decomment
-yarn install  # or npm install
-```
-
-### Globally via npm
-
-```bash
-npm install -g decomment
+npm install
 ```
 
 ---
@@ -40,51 +49,80 @@ npm install -g decomment
 ## Usage
 
 ```bash
-decomment [options] <files/globs>
+decomment [options] [files/globs]
 ```
 
-### Options
-
-| Option       | Description                                                              |
-| ------------ | ------------------------------------------------------------------------ |
-| `--dry-run`  | Preview changes without writing files                                    |
-| `--keep`     | Comma-separated prefixes to keep (default: `eslint-,@license,@preserve`) |
-| `--stats`    | Show number of comments removed/kept                                     |
-| `-h, --help` | Show help message                                                        |
+If no files or globs are provided, **decomment scans the current directory by default**.
 
 ---
 
-### Examples
+## Options
 
-**Preview changes for all JS, MJS, JSX, TSX, Vue files (multi-type):**
+| Option       | Description                                  |
+| ------------ | -------------------------------------------- |
+| `--dry-run`  | Preview changes without writing files        |
+| `--keep`     | Comma-separated comment prefixes to preserve |
+| `--stats`    | Show number of comments removed and kept     |
+| `-h, --help` | Show help message                            |
 
-```bash
-node ./bin/decomment.mjs "src/**/*.{js,mjs,jsx,tsx,vue}" --dry-run --stats
+Default preserved prefixes:
+
+```graphql
+eslint-, @license, @preserve
 ```
 
-**Preview changes for all JS files only (single type):**
+---
+
+## Examples
+
+### Remove comments from the current project (default behavior)
 
 ```bash
-node ./bin/decomment.mjs "src/**/*.js" --dry-run --stats
+decomment
 ```
 
-**Actually remove comments from JS and TS files, keeping eslint/license:**
+Equivalent to:
 
 ```bash
-node ./bin/decomment.mjs "src/**/*.{js,ts}" --keep eslint-,@license --stats
+decomment "**/*.{js,mjs,jsx,tsx,vue}"
 ```
 
-**Use `decomment.config.js` if no files specified:**
+Automatically excludes:
+
+- `node_modules`
+- `dist`
+- `build`
+- `.git`
+
+---
+
+### Preview changes (dry-run)
 
 ```bash
-node ./bin/decomment.mjs
+decomment "src/**/*.js" --dry-run --stats
+```
+
+---
+
+### Process multiple file types
+
+```bash
+decomment "src/**/*.{js,mjs,jsx,tsx,vue}" --stats
+```
+
+---
+
+### Preserve specific comment prefixes
+
+```bash
+decomment "src/**/*.{js,ts}" --keep eslint-,@license --stats
 ```
 
 ---
 
 ## Configuration (`decomment.config.js`)
 
-Optional configuration file to define default files and keep prefixes.
+An optional configuration file can be placed at the project root.
 
 ```js
 export default {
@@ -93,50 +131,96 @@ export default {
 };
 ```
 
-- `include` → Array of glob patterns to process by default
-- `keep` → Array of comment prefixes to preserve
+### Config precedence
+
+1.  CLI file/glob arguments
+2.  `config.include`
+3.  Default glob (`**/*.{js,mjs,jsx,tsx,vue}`)
 
 ---
 
-## Backup
+## Backup & Safety
 
-By default, the tool generates a `.bak` file for every processed file.  
-If a `.bak` file already exists, a timestamp is added to avoid overwriting.
+For each processed file, **decomment creates a single backup**:
 
----
+```csharp
+<file>.decomment.bak
+```
 
-## Limitations
-
-- Only removes comments recognized by the AST parser; unusual comment formats may be ignored
-- Cannot remove comments from minified or obfuscated code safely
-- Single-file regex replacements are not recommended; always use AST mode
-- Vue `<template>` section comments are ignored unless you enable the `vue` plugin (already enabled in default config)
+- The backup is overwritten on subsequent runs
+- Designed for intentional, one-shot operations
+- Guarantees full reversibility
 
 ---
 
+## Restore & Cleanup
+
+### Restore files from backup
+
+```bash
+decomment restore
+```
+
+Restores files from their `.decomment.bak` backups.
+
 ---
 
-## 🏆 When to Choose decomment
+### Remove all backup files
 
-- You want **zero code behavior changes**
+```bash
+decomment clean
+```
+
+Deletes all `.decomment.bak` files in the matched scope.
+
+---
+
+## 🔍 Comparison with Other Tools
+
+| Feature / Tool        | **decomment**                   | strip-comments | comment-strip  | Babel / esbuild / Terser |
+| --------------------- | ------------------------------- | -------------- | -------------- | ------------------------ |
+| AST-based (safe)      | ✅ Yes                          | ❌ Regex-based | ❌ Regex-based | ✅ Yes                   |
+| Preserves semantics   | ✅ Guaranteed                   | ❌ Risky       | ❌ Risky       | ❌ Not guaranteed        |
+| Removes only comments | ✅ Yes                          | ⚠️ Mostly      | ⚠️ Mostly      | ❌ No (build output)     |
+| JSX / TSX support     | ✅ Yes                          | ⚠️ Partial     | ⚠️ Partial     | ✅ Yes                   |
+| Vue SFC support       | ✅ Script section only          | ❌ No          | ❌ No          | ⚠️ Limited               |
+| Preserve prefixes     | ✅ Yes (`--keep`)               | ❌ No          | ❌ No          | ⚠️ Limited               |
+| Dry-run mode          | ✅ Yes                          | ❌ No          | ❌ No          | ❌ No                    |
+| Statistics output     | ✅ Yes                          | ❌ No          | ❌ No          | ❌ No                    |
+| Backup & rollback     | ✅ Yes                          | ❌ No          | ❌ No          | ❌ No                    |
+| Glob batch processing | ✅ Yes                          | ⚠️ Limited     | ⚠️ Limited     | ⚠️ Build-specific        |
+| Config file support   | ✅ Yes                          | ❌ No          | ❌ No          | ❌ No                    |
+| CI / pre-commit ready | ✅ Designed for it              | ❌ No          | ❌ No          | ⚠️ Not intended          |
+| Risk of breaking code | **Very Low**                    | Medium         | Medium         | High                     |
+| Primary use case      | **Production codebase hygiene** | Small scripts  | Small scripts  | Build & minification     |
+
+---
+
+## 🧠 Why decomment Exists
+
+- **Regex-based tools** do not understand syntax and can break code
+- **Build tools** modify structure, formatting, and semantics
+- **decomment** removes comments — **and nothing else**
+
+If you care about safety, reviewability, and deterministic output, this tool is built for you.
+
+---
+
+## 🏆 When to Use decomment
+
+- You want **zero behavior changes**
 - You need **auditable CI output**
-- You must **preserve ESLint / license comments**
-- You work with **modern JS frameworks**
-- You want a **safe, reversible operation**
+- You must **preserve ESLint and license comments**
+- You work with **modern JS / TS / Vue codebases**
+- You want **safe and reversible operations**
 
 ---
 
-## 🧪 When NOT to Use decomment
+## 🚫 When NOT to Use decomment
 
 - You just need quick text cleanup
-- You already minify your source code
-- You don't care about accidental removals
-
----
-
-## 🔑 One-liner for npm Description
-
-> **AST-based comment removal for production codebases. Safe, configurable, auditable, and CI-ready.**
+- You already minify source code
+- You do not care about accidental removals
 
 ---
 

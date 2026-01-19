@@ -1,7 +1,7 @@
 {
-  "name": "decomment",
+  "name": "@king-monkey/decomment",
   "version": "0.1.0",
-  "description": "Safely remove comments from JavaScript / JSX using AST",
+  "description": "Safely remove comments from JavaScript, TypeScript, JSX, TSX, and Vue files using AST.",
   "type": "module",
   "bin": {
     "decomment": "./bin/decomment.mjs"
@@ -12,10 +12,39 @@
   "files": [
     "bin",
     "src",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "engines": {
     "node": ">=18"
+  },
+  "keywords": [
+    "comment",
+    "strip-comments",
+    "remove-comments",
+    "ast",
+    "javascript",
+    "typescript",
+    "jsx",
+    "tsx",
+    "vue",
+    "cli",
+    "code-quality",
+    "refactor",
+    "eslint",
+    "license"
+  ],
+  "author": "King Monkey",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tomatobybike/decomment.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tomatobybike/decomment/issues"
+  },
+  "homepage": "https://github.com/tomatobybike/decomment#readme",
+  "publishConfig": {
+    "access": "public"
   },
   "dependencies": {
     "@babel/parser": "^7.24.0",
