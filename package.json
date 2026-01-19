@@ -1,6 +1,7 @@
 {
-  "name": "@king-monkey/decomment",
+  "name": "@tomatobybike/decomment",
   "version": "0.1.1",
+  "private": false,
   "description": "Safely remove comments from JavaScript, TypeScript, JSX, TSX, and Vue files using AST.",
   "keywords": [
     "comment",
@@ -30,7 +31,7 @@
     "prettierall": "npx prettier --write 'src/**/*.{js,jsx}'",
     "push:tags": "git push origin main --follow-tags",
     "prerelease": "yarn lint",
-    "release": "yarn check:npm:login && yarn release:patch && npm publish && yarn push:tags",
+    "release": "yarn check:npm:login && yarn release:patch && npm publish --access public && yarn push:tags",
     "release:rollback": "git reset --hard HEAD~1 && git tag -d $(git tag --points-at HEAD~1)",
     "release:major": "yarn lint && standard-version --release-as major",
     "release:minor": "yarn lint && standard-version --release-as minor",
