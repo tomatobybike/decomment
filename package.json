@@ -38,7 +38,7 @@
     "release:patch": "yarn lint && standard-version --release-as patch",
     "sort": "sort-package-json"
   },
-  "homepage": "https://github.com/tomatobybike/decomment#readme",
+  "homepage": "https://tomatobybike.github.io/decomment/",
   "bugs": {
     "url": "https://github.com/tomatobybike/decomment/issues"
   },
